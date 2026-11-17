@@ -235,6 +235,11 @@ def _could_be_not_found(buf: str) -> bool:
 # ---------------------------------------------------------------- pipeline
 
 OVERVIEW_PASSAGES = 10
+BEST_EFFORT = (
+    "\n\nThe first pass found no exact match. Now give the most helpful answer you can from these passages: "
+    "say what they do cover that relates to the question, cite with [n], and state plainly which exact detail "
+    "they do not state. Do not reply NOT_FOUND."
+)
 WEAK_NORM = 0.35
 
 
@@ -454,6 +459,28 @@ def ask(question: str, doc_ids, history, model=None) -> Iterator[dict]:
                 model=model, passages=len(used), estimated_tokens=est)
 
     if not found:
+        # Second chance: look more broadly and give the most helpful answer instead of a flat refusal.
+        yield status("generating", "Looking more broadly")
+        extra = [h for h in _sample_hits(scope or ready) if h.chunk.id not in {u.chunk.id for u in used}]
+        used2 = _select_for_budget(list(used) + extra)
+        msgs2 = [{"role": "system", "content": prompts.SYSTEM_PROMPT + BEST_EFFORT}]
+        msgs2.extend(hist[-4:])
+        msgs2.append({"role": "user", "content": prompts.build_user_message(question, prompts.build_context(used2))})
+        try:
+            text2 = llm.complete(msgs2, max_tokens=1200, temperature=0.1).strip()
+        except Exception:
+            text2 = ""
+        if text2 and not text2.startswith(NOT_FOUND):
+            srcs2 = [_source(i, h) for i, h in enumerate(used2, 1)]
+            yield _ev("sources", sources=srcs2)
+            yield _ev("token", text=text2)
+            cites2 = _citations(text2, len(used2))
+            total2 = elapsed()
+            m2 = dict(m, total_ms=total2, llm_ms=llm_ms + (total2 - total), passages=len(used2))
+            log(True, m2["llm_ms"], used2, len(cites2), m2)
+            yield _ev("done", answer=text2, found=True, citations=cites2,
+                      latency_ms={"retrieval": retrieval_ms, "llm": m2["llm_ms"]}, top_score=round(top, 4), metrics=m2)
+            return
         log(False, llm_ms, used, 0, m)
         if ckey is not None:
             _cache_put(ckey, {"sources": srcs, "answer": NOT_FOUND, "found": False, "citations": [], "top": round(top, 4),
