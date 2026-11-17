@@ -377,7 +377,7 @@
   function updateScope() {
     var ready = readyDocs(), inc = includedDocs();
     // An empty scope is never useful: default back to every ready document.
-    if (ready.length && !inc.length) { state.excluded.clear(); saveExcluded(); inc = includedDocs(); }
+    if (ready.length && !inc.length) { state.excluded.clear(); saveExcluded(); inc = includedDocs(); setTimeout(renderDocs, 0); }
     var el = $('#scope'), h = '';
     if (!ready.length) {
       h = '<span class="schip muted">' + icon('paperclip') + '<span>' + (state.docs.length ? 'Documents are being prepared' : 'No documents yet. Attach a file to begin') + '</span></span>';
