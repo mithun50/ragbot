@@ -596,10 +596,18 @@
 
   /* ---------- conversations ---------- */
   function saveConvs() {
-    var data = JSON.stringify(state.convs);
-    try { localStorage.setItem('ragbot.convs', data); } catch (e) {
-      state.convs.forEach(function (c) { if (c !== state.cur) c.turns.forEach(function (t) { t.sources = []; }); });
-      try { localStorage.setItem('ragbot.convs', JSON.stringify(state.convs)); } catch (e2) { /* give up */ }
+    // History must survive reloads: store a compact copy (short passages) and drop only the oldest chats if storage is full.
+    function compact(c) {
+      return Object.assign({}, c, { turns: c.turns.map(function (t) {
+        return Object.assign({}, t, { steps: [], sources: (t.sources || []).map(function (s) { return Object.assign({}, s, { text: String(s.text || '').slice(0, 600) }); }) });
+      }) });
+    }
+    var list = state.convs.map(compact);
+    for (;;) {
+      try { localStorage.setItem('ragbot.convs', JSON.stringify(list)); return; } catch (e) {
+        if (list.length <= 1) return;
+        list.pop();
+      }
     }
   }
   function sortConvs() { state.convs.sort(function (a, b) { return (b.updated || 0) - (a.updated || 0); }); }
