@@ -1,0 +1,34 @@
+Lecture 4: Memory Hierarchy and Caching
+Course: Computer Systems Fundamentals, Week 3
+
+Why a hierarchy at all
+Fast memory is small and expensive, large memory is slow and cheap. A hierarchy gives the illusion of a memory that is both large and fast
+by keeping recently used data close to the processor. Typical access times: registers under 1 ns, L1 cache about 1 ns, L2 about 4 ns,
+L3 about 15 ns, main memory about 80 ns, solid state disk about 100 microseconds.
+
+Locality
+Temporal locality: an item used recently is likely to be used again soon. Spatial locality: items near a recently used item are likely
+to be used soon. Loops over arrays exhibit both. Caches exploit temporal locality by retaining lines and spatial locality by fetching
+whole lines of 64 bytes.
+
+Cache organisation
+A direct mapped cache maps each block to exactly one line. A fully associative cache lets a block go anywhere. A set associative cache
+is the compromise, with 4 way and 8 way designs being common. The index bits select the set, the tag bits identify the block.
+
+Example worked in class
+A 32 KB, 8 way cache with 64 byte lines has 512 lines and 64 sets. That means 6 index bits and 6 offset bits. On a 32 bit address
+the tag has 20 bits.
+
+Miss types (the three Cs)
+Compulsory misses happen on the first touch. Capacity misses happen when the working set exceeds the cache. Conflict misses happen
+when too many blocks map to the same set.
+
+Write policies
+Write through updates memory on every write. Write back marks the line dirty and writes it out on eviction. Most modern caches
+use write back with write allocate.
+
+Average memory access time
+AMAT = hit time + miss rate x miss penalty. With a 1 ns hit time, a 5 percent miss rate and a 60 ns penalty the AMAT is 4 ns.
+
+Reminders
+Assignment 2 is due on Friday of week 5. The midterm covers lectures 1 to 5. Office hours are on Tuesdays at 14:00 in room B214.

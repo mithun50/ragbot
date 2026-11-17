@@ -278,12 +278,21 @@ def _stream_once(model: str, key: str, messages, max_tokens, temperature) -> Ite
     yield ev
 
 
-def stream_events(messages: list[dict], max_tokens: int = 900, temperature: float = 0.1) -> Iterator[dict]:
+def _ordered(preferred: Optional[str]) -> list[str]:
+    """Configured models with the user's pick first (only if it is a configured model)."""
+    chain = _models()
+    if preferred and preferred in chain:
+        return [preferred] + [m for m in chain if m != preferred]
+    return chain
+
+
+def stream_events(messages: list[dict], max_tokens: int = 900, temperature: float = 0.1,
+                  model: Optional[str] = None) -> Iterator[dict]:
     if not is_configured():
         raise LLMNotConfigured("OPENROUTER_API_KEY is not set")
     key = _key()
     failures: list[str] = []
-    for model in _models():
+    for model in _ordered(model):
         for attempt in range(MAX_ATTEMPTS):
             try:
                 for ev in _stream_once(model, key, messages, max_tokens, temperature):

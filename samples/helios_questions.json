@@ -1,0 +1,208 @@
+[
+  {
+    "question": "On what date was the Helios constellation declared operational?",
+    "expected_answer_contains": "9 October 2031",
+    "page": 12,
+    "chapter": 1,
+    "id": "F01"
+  },
+  {
+    "question": "Who is the Mission Director of Helios Orbital Systems?",
+    "expected_answer_contains": "Imara Voss-Lindqvist",
+    "page": 20,
+    "chapter": 1,
+    "id": "F02"
+  },
+  {
+    "question": "What is the dry mass of a Helios spacecraft bus?",
+    "expected_answer_contains": "1,462 kilograms",
+    "page": 35,
+    "chapter": 2,
+    "id": "F03"
+  },
+  {
+    "question": "Below what temperature are the propellant tank heaters commanded on?",
+    "expected_answer_contains": "7.5 degrees Celsius",
+    "page": 45,
+    "chapter": 3,
+    "id": "F04"
+  },
+  {
+    "question": "What is the maximum allowed surface temperature of the radiator panel that serves the avionics deck?",
+    "expected_answer_contains": "61 degrees Celsius",
+    "page": 43,
+    "chapter": 3,
+    "id": "F05"
+  },
+  {
+    "question": "Below what voltage must the battery bus of a Helios-C series spacecraft not be discharged?",
+    "expected_answer_contains": "31.5 volts",
+    "page": 62,
+    "chapter": 4,
+    "id": "F06",
+    "decoy_page": 181,
+    "decoy_chapter": 11
+  },
+  {
+    "question": "What array current ripple percentage leads to a solar array drive anomaly being declared?",
+    "expected_answer_contains": "3.2 percent",
+    "page": 60,
+    "chapter": 4,
+    "id": "F07"
+  },
+  {
+    "question": "What is the maximum speed limit of the reaction wheel assembly on the flight spacecraft?",
+    "expected_answer_contains": "5,400 revolutions per minute",
+    "page": 79,
+    "chapter": 5,
+    "id": "F08",
+    "decoy_page": 200,
+    "decoy_chapter": 12
+  },
+  {
+    "question": "How long can the spacecraft remain in its sun-pointing safe attitude after the star tracker loses lock before ground intervention is required?",
+    "expected_answer_contains": "96 hours",
+    "page": 83,
+    "chapter": 5,
+    "id": "F09"
+  },
+  {
+    "question": "What is the nominal thrust of the experimental ion thruster carried by Helios-7?",
+    "expected_answer_contains": "84 millinewtons",
+    "page": 96,
+    "chapter": 6,
+    "id": "F10"
+  },
+  {
+    "question": "How much xenon propellant is loaded at launch?",
+    "expected_answer_contains": "212 kilograms",
+    "page": 94,
+    "chapter": 6,
+    "id": "F11"
+  },
+  {
+    "question": "Between which UTC times does ground station Kiruna handle contacts for Helios-7?",
+    "expected_answer_contains": "02:10 and 02:45 UTC",
+    "page": 115,
+    "chapter": 7,
+    "id": "F12",
+    "decoy_page": 149,
+    "decoy_chapter": 9
+  },
+  {
+    "question": "What data rate does the Ka-band downlink carry science data at?",
+    "expected_answer_contains": "450 megabits per second",
+    "page": 111,
+    "chapter": 7,
+    "id": "F13"
+  },
+  {
+    "question": "By how much must the onboard clock drift against UTC before it is corrected?",
+    "expected_answer_contains": "1.8 milliseconds",
+    "page": 139,
+    "chapter": 8,
+    "id": "F14"
+  },
+  {
+    "question": "How many missed heartbeat messages cause the backup flight computer to take over?",
+    "expected_answer_contains": "three consecutive missed heartbeat",
+    "page": 129,
+    "chapter": 8,
+    "id": "F15"
+  },
+  {
+    "question": "Which procedure covers orbit raise burn authorisation and how many flight directors must approve it?",
+    "expected_answer_contains": "OPS-417",
+    "page": 150,
+    "chapter": 9,
+    "id": "F16"
+  },
+  {
+    "question": "At what UTC times do shift handover briefings begin?",
+    "expected_answer_contains": "13:50",
+    "page": 147,
+    "chapter": 9,
+    "id": "F17"
+  },
+  {
+    "question": "Who is the designated Chief Safety Officer?",
+    "expected_answer_contains": "Tomasz Okonkwo-Reyes",
+    "page": 161,
+    "chapter": 10,
+    "id": "F18"
+  },
+  {
+    "question": "What change in orbit velocity makes a command require two person authorisation?",
+    "expected_answer_contains": "0.5 meters per second",
+    "page": 165,
+    "chapter": 10,
+    "id": "F19"
+  },
+  {
+    "question": "How often is preventive maintenance performed on the ground station antenna drive systems?",
+    "expected_answer_contains": "182 days",
+    "page": 179,
+    "chapter": 11,
+    "id": "F20"
+  },
+  {
+    "question": "How many hours of simulator training must a new flight controller complete before certification?",
+    "expected_answer_contains": "340 hours",
+    "page": 200,
+    "chapter": 12,
+    "id": "F21"
+  },
+  {
+    "question": "What is the approved annual operations budget for fiscal year 2032?",
+    "expected_answer_contains": "48.7 million euros",
+    "page": 213,
+    "chapter": 13,
+    "id": "F22"
+  },
+  {
+    "question": "What is the value of the ground segment upgrade contract?",
+    "expected_answer_contains": "6.35 million euros",
+    "page": 217,
+    "chapter": 13,
+    "id": "F23"
+  },
+  {
+    "question": "Which incident report covers the loss of attitude knowledge on Helios-11?",
+    "expected_answer_contains": "INC-2033-0417",
+    "page": 232,
+    "chapter": 14,
+    "id": "F24"
+  },
+  {
+    "question": "How long did recovery take for incident INC-2034-0122?",
+    "expected_answer_contains": "19 hours and 40 minutes",
+    "page": 232,
+    "chapter": 14,
+    "id": "F25"
+  },
+  {
+    "question": "What is the capital city of Australia?",
+    "expected": "NOT_FOUND",
+    "id": "N01"
+  },
+  {
+    "question": "Who is the Chief Executive Officer of Orbital Dynamics Corporation?",
+    "expected": "NOT_FOUND",
+    "id": "N02"
+  },
+  {
+    "question": "What is the planned launch date of the Helios Mars lander mission?",
+    "expected": "NOT_FOUND",
+    "id": "N03"
+  },
+  {
+    "question": "What is the stock ticker symbol of Helios Orbital Systems on the exchange?",
+    "expected": "NOT_FOUND",
+    "id": "N04"
+  },
+  {
+    "question": "What vegetarian dishes are served in the Helios staff canteen on Fridays?",
+    "expected": "NOT_FOUND",
+    "id": "N05"
+  }
+]

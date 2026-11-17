@@ -23,7 +23,7 @@
       <i data-lucide="panel-left"></i>
     </button>
     <a class="logo" href="/" aria-label="RagBot home">
-      <span class="logo-mark"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M9 3h14a6 6 0 0 1 6 6v8a6 6 0 0 1-6 6h-7l-6.2 5.2c-.7.6-1.8.1-1.8-.8V23.6A6 6 0 0 1 3 17.6V9a6 6 0 0 1 6-6z" fill="#0F5C5C"/><rect x="8" y="9" width="16" height="2.2" rx="1.1" fill="#fff" fill-opacity=".55"/><rect x="7" y="13.2" width="13" height="4" rx="1.4" fill="#FFC857"/><rect x="8.6" y="14.3" width="9.8" height="1.8" rx=".9" fill="#0F2E2E"/><rect x="8" y="19" width="9" height="2.2" rx="1.1" fill="#fff" fill-opacity=".55"/></svg></span>
+      <span class="logo-mark"><svg viewBox="0 0 32 32" aria-hidden="true"><rect class="lg-b" x="1" y="1" width="30" height="30" rx="9"/><rect class="lg-w" x="6" y="12.6" width="20" height="6.8" rx="2.4" opacity=".2"/><rect class="lg-w" x="8.5" y="8" width="15" height="2.6" rx="1.3"/><rect class="lg-w" x="8.5" y="14.7" width="10.5" height="2.6" rx="1.3"/><rect class="lg-w" x="8.5" y="21.4" width="13" height="2.6" rx="1.3" opacity=".5"/></svg></span>
       <span class="logo-word">RagBot</span>
     </a>
   </div>
@@ -39,6 +39,7 @@
   </nav>
 
   <div class="topbar-right">
+    <a class="icon-btn" href="/static/how-it-works.html" target="_blank" rel="noopener" aria-label="How it works" title="How it works"><i data-lucide="workflow"></i></a>
     <button class="icon-btn theme-btn" id="btn-theme" aria-label="Switch to dark theme" aria-pressed="false"><i data-lucide="sun" class="sun"></i><i data-lucide="moon" class="moon"></i></button>
     <div class="menu-wrap">
       <button class="pill" id="model-pill" aria-haspopup="listbox" aria-expanded="false" title="Language model">
@@ -65,7 +66,7 @@
 
   <aside class="sidebar" id="sidebar" aria-label="Conversations and documents">
     <div class="side-top">
-      <div class="side-brand"><span class="logo-mark"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M9 3h14a6 6 0 0 1 6 6v8a6 6 0 0 1-6 6h-7l-6.2 5.2c-.7.6-1.8.1-1.8-.8V23.6A6 6 0 0 1 3 17.6V9a6 6 0 0 1 6-6z" fill="#0F5C5C"/><rect x="8" y="9" width="16" height="2.2" rx="1.1" fill="#fff" fill-opacity=".55"/><rect x="7" y="13.2" width="13" height="4" rx="1.4" fill="#FFC857"/><rect x="8.6" y="14.3" width="9.8" height="1.8" rx=".9" fill="#0F2E2E"/><rect x="8" y="19" width="9" height="2.2" rx="1.1" fill="#fff" fill-opacity=".55"/></svg></span><span class="logo-word">RagBot</span></div>
+      <div class="side-brand"><span class="logo-mark"><svg viewBox="0 0 32 32" aria-hidden="true"><rect class="lg-b" x="1" y="1" width="30" height="30" rx="9"/><rect class="lg-w" x="6" y="12.6" width="20" height="6.8" rx="2.4" opacity=".2"/><rect class="lg-w" x="8.5" y="8" width="15" height="2.6" rx="1.3"/><rect class="lg-w" x="8.5" y="14.7" width="10.5" height="2.6" rx="1.3"/><rect class="lg-w" x="8.5" y="21.4" width="13" height="2.6" rx="1.3" opacity=".5"/></svg></span><span class="logo-word">RagBot</span></div>
       <button class="btn new-btn" id="btn-new"><i data-lucide="square-pen"></i><span>New chat</span></button>
       <div class="search">
         <i data-lucide="search"></i>
@@ -165,6 +166,7 @@
 
 <div class="toasts" id="toasts" role="status" aria-live="polite"></div>
 
+<script src="/static/archdiagram.js" defer></script>
 <script src="/static/app.js" defer></script>
 </body>
 </html>

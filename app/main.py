@@ -160,12 +160,13 @@ class AskBody(BaseModel):
     question: str
     doc_ids: Optional[list[str]] = None
     history: Optional[list[HistoryItem]] = None
+    model: Optional[str] = None
 
 
 def _frames(body: AskBody) -> Iterator[str]:
     history = [h.model_dump() for h in (body.history or [])]
     try:
-        for ev in qa.ask(body.question, body.doc_ids or [], history):
+        for ev in qa.ask(body.question, body.doc_ids or [], history, body.model):
             yield f"event: {ev['event']}\ndata: {json.dumps(ev['data'], ensure_ascii=False)}\n\n"
     except Exception:
         err = {"message": "Something went wrong while answering. Please try again."}

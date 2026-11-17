@@ -15,7 +15,7 @@
     ['book-open', 'Which topics are covered in the most detail?']
   ];
 
-  var LOGO = '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M9 3h14a6 6 0 0 1 6 6v8a6 6 0 0 1-6 6h-7l-6.2 5.2c-.7.6-1.8.1-1.8-.8V23.6A6 6 0 0 1 3 17.6V9a6 6 0 0 1 6-6z" fill="#0F5C5C"/><rect x="8" y="9" width="16" height="2.2" rx="1.1" fill="#fff" fill-opacity=".55"/><rect x="7" y="13.2" width="13" height="4" rx="1.4" fill="#FFC857"/><rect x="8.6" y="14.3" width="9.8" height="1.8" rx=".9" fill="#0F2E2E"/><rect x="8" y="19" width="9" height="2.2" rx="1.1" fill="#fff" fill-opacity=".55"/></svg>';
+  var LOGO = '<svg viewBox="0 0 32 32" aria-hidden="true"><rect class="lg-b" x="1" y="1" width="30" height="30" rx="9"/><rect class="lg-w" x="6" y="12.6" width="20" height="6.8" rx="2.4" opacity=".2"/><rect class="lg-w" x="8.5" y="8" width="15" height="2.6" rx="1.3"/><rect class="lg-w" x="8.5" y="14.7" width="10.5" height="2.6" rx="1.3"/><rect class="lg-w" x="8.5" y="21.4" width="13" height="2.6" rx="1.3" opacity=".5"/></svg>';
 
   var state = {
     docs: [], docsLoaded: false, excluded: new Set(), open: null, config: null, view: 'chat',
@@ -149,26 +149,47 @@
       state.config = c;
       var ok = !!c.llm_configured;
       $('#model-dot').className = 'dot ' + (ok ? 'ok' : 'warn');
-      $('#model-text').textContent = ok ? (c.model || 'Model ready') : 'No API key';
       var dismissed = store('ragbot.banner') === '1';
       $('#banner').hidden = ok || dismissed;
-      var models = (c.models || []).map(function (m) { return typeof m === 'string' ? m : (m.id || m.name || ''); }).filter(Boolean);
-      if (c.model && models.indexOf(c.model) < 0) models.unshift(c.model);
-      var h = '<div class="menu-label">Models</div>' + (models.length ? models.map(function (m) {
-        var act = m === c.model;
-        return '<div class="menu-item' + (act ? ' is-active' : '') + '" role="option" aria-selected="' + act + '">' + (act ? icon('check') : '<span class="ph"></span>') + '<span title="' + esc(m) + '">' + esc(m) + '</span></div>';
-      }).join('') : '<div class="menu-item"><span class="ph"></span><span>No models listed</span></div>') +
-        '<div class="menu-label foot">' + esc((c.app_name || 'RagBot') + (c.version ? ' v' + c.version : '')) + '</div>';
-      $('#model-menu').innerHTML = h;
-      icons();
+      renderModelMenu();
     }).catch(function () {
       $('#model-dot').className = 'dot';
       $('#model-text').textContent = 'Offline';
     });
   }
+  function modelList() {
+    var c = state.config || {};
+    var models = (c.models || []).map(function (m) { return typeof m === 'string' ? m : (m.id || m.name || ''); }).filter(Boolean);
+    if (c.model && models.indexOf(c.model) < 0) models.unshift(c.model);
+    return models;
+  }
+  function activeModel() {
+    var c = state.config || {}, saved = store('ragbot.model');
+    return saved && modelList().indexOf(saved) >= 0 ? saved : (c.model || '');
+  }
+  function renderModelMenu() {
+    var c = state.config || {}, models = modelList(), active = activeModel();
+    $('#model-text').textContent = c.llm_configured ? (active || 'Model ready') : 'No API key';
+    $('#model-menu').innerHTML = '<div class="menu-label">Choose a model</div>' + (models.length ? models.map(function (m) {
+      var act = m === active;
+      return '<div class="menu-item' + (act ? ' is-active' : '') + '" role="option" tabindex="0" data-model="' + esc(m) + '" aria-selected="' + act + '">' + (act ? icon('check') : '<span class="ph"></span>') + '<span title="' + esc(m) + '">' + esc(m) + '</span></div>';
+    }).join('') : '<div class="menu-item"><span class="ph"></span><span>No models listed</span></div>') +
+      '<div class="menu-label foot">' + esc((c.app_name || 'RagBot') + (c.version ? ' v' + c.version : '')) + '</div>';
+    icons();
+  }
   function setupModelMenu() {
     var pill = $('#model-pill'), menu = $('#model-menu');
     function close() { menu.hidden = true; pill.setAttribute('aria-expanded', 'false'); }
+    function pick(e) {
+      var it = e.target.closest && e.target.closest('[data-model]');
+      if (!it) return;
+      store('ragbot.model', it.getAttribute('data-model'));
+      renderModelMenu();
+      close();
+      if (typeof toast === 'function') toast('Using ' + it.getAttribute('data-model'));
+    }
+    menu.addEventListener('click', pick);
+    menu.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(e); } });
     pill.addEventListener('click', function (e) {
       e.stopPropagation();
       menu.hidden = !menu.hidden;
@@ -355,6 +376,8 @@
 
   function updateScope() {
     var ready = readyDocs(), inc = includedDocs();
+    // An empty scope is never useful: default back to every ready document.
+    if (ready.length && !inc.length) { state.excluded.clear(); saveExcluded(); inc = includedDocs(); }
     var el = $('#scope'), h = '';
     if (!ready.length) {
       h = '<span class="schip muted">' + icon('paperclip') + '<span>' + (state.docs.length ? 'Documents are being prepared' : 'No documents yet. Attach a file to begin') + '</span></span>';
@@ -553,8 +576,9 @@
     $('#src-sub').textContent = srcs.length + ' passage' + (srcs.length === 1 ? '' : 's') + ' retrieved';
     if (list.dataset.turn !== String(t.id) || list.dataset.count !== String(srcs.length)) {
       list.dataset.turn = String(t.id); list.dataset.count = String(srcs.length);
+      var smx = Math.max.apply(null, srcs.map(function (s) { return s.score || 0; }).concat([0.0001]));
       list.innerHTML = srcs.map(function (s, i) {
-        var rel = clamp01(s.score);
+        var rel = clamp01((s.score || 0) / smx);
         return '<li class="src" id="src-' + s.n + '" data-n="' + s.n + '" style="animation-delay:' + Math.min(i, 8) * 40 + 'ms">' +
           '<div class="src-top"><span class="src-n">' + s.n + '</span><span class="src-file" title="' + esc(s.filename) + '">' + esc(s.filename) + '</span><span class="src-page">p.' + esc(s.page) + '</span></div>' +
           (s.heading ? '<div class="src-sec" title="' + esc(s.heading) + '">' + esc(s.heading) + '</div>' : '') +
@@ -683,9 +707,10 @@
     w.innerHTML = '<div class="welcome-mark">' + LOGO + '</div><h1 class="welcome-title">Ask RagBot about your documents</h1><p class="welcome-copy">' + esc(copy) + '</p>' +
       '<div class="welcome-cards">' + cards.map(function (c) {
         return '<button type="button" class="wcard" data-q="' + esc(c[1]) + '">' + icon(c[0]) + '<span>' + esc(c[1]) + '</span></button>';
-      }).join('') + '</div>';
+      }).join('') + '</div><div class="arch-card" id="arch-card"></div>';
     $$('.wcard', w).forEach(function (b) { b.addEventListener('click', function () { askQuestion(b.dataset.q); }); });
     icons();
+    if (window.RagArch) window.RagArch.mount($('#arch-card'));
   }
 
   /* ---------- turns ---------- */
@@ -852,9 +877,10 @@
   }
 
   function srcRowHTML(t) {
+    var mx = Math.max.apply(null, (t.sources || []).map(function (s) { return s.score || 0; }).concat([0.0001]));
     return (t.sources || []).map(function (s) {
-      var rel = clamp01(s.score);
-      return '<button type="button" class="scard" data-n="' + s.n + '" aria-label="Open source ' + s.n + ', ' + esc(s.filename) + ' page ' + esc(s.page) + '">' +
+      var rel = clamp01((s.score || 0) / mx);
+      return '<button type="button" class="scard" title="Relevance of this passage compared with the best match" data-n="' + s.n + '" aria-label="Open source ' + s.n + ', ' + esc(s.filename) + ' page ' + esc(s.page) + '">' +
         '<div class="sc-top"><span class="sc-n">' + s.n + '</span><span class="sc-file" title="' + esc(s.filename) + '">' + esc(s.filename) + '</span></div>' +
         '<div class="sc-bot"><span>p.' + esc(s.page) + '</span><div class="bar"><span style="width:' + Math.round(rel * 100) + '%"></span></div><span>' + Math.round(rel * 100) + '%</span></div></button>';
     }).join('');
@@ -930,7 +956,8 @@
     if (state.view !== 'chat') setView('chat');
     if (isNarrow()) toggleSidebar(false);
     var ready = readyDocs(), ids = includedIds();
-    if (ready.length && !ids.length) { toast('Select at least one document to search.', 'err'); return; }
+    // One chat, any number of documents: never block on selection, fall back to every ready document.
+    if (ready.length && !ids.length) { state.excluded.clear(); saveExcluded(); renderDocs(); ids = includedIds(); }
 
     var history = buildHistory();
     if (!state.cur) {
@@ -1022,7 +1049,7 @@
     fetch('/api/ask', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Accept': 'text/event-stream' },
-      body: JSON.stringify({ question: q, doc_ids: ids, history: history }),
+      body: JSON.stringify({ question: q, doc_ids: ids, history: history, model: activeModel() || null }),
       signal: ctrl.signal
     }).then(function (res) {
       if (!res.ok) {

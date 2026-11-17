@@ -1,6 +1,6 @@
 """Generate samples/helios_handbook.pdf and samples/helios_questions.json.
 
-Usage:  python tools/make_sample_pdf.py [--scale 1.0]
+Usage:  python tools/make_sample_pdf.py [--scale 1.6]
 
 The text is produced from rich templates with a fixed RNG seed, so output is
 deterministic. Twenty five checkable facts are planted at known sections; their
@@ -40,6 +40,7 @@ GREY = colors.HexColor("#5b6472")
 LIGHT = colors.HexColor("#e9edf3")
 
 FACT_PAGES: dict[str, int] = {}
+ANSWERS = [f["a"] for f in T.FACTS]
 
 
 def S(name, **kw):
@@ -53,6 +54,7 @@ ST = {
     "h1": S("h1", fontName=SANS_B, fontSize=22, leading=27, textColor=NAVY, alignment=TA_LEFT, spaceAfter=14),
     "chap_no": S("chap_no", fontName=SANS, fontSize=12, leading=16, textColor=GREY, alignment=TA_LEFT, spaceBefore=60),
     "h2": S("h2", fontName=SANS_B, fontSize=13.5, leading=17, textColor=NAVY, alignment=TA_LEFT, spaceBefore=12, spaceAfter=6),
+    "h1plain": S("h1plain", fontName=SANS_B, fontSize=22, leading=27, textColor=NAVY, alignment=TA_LEFT, spaceAfter=14),
     "h2plain": S("h2plain", fontName=SANS_B, fontSize=13.5, leading=17, textColor=NAVY, alignment=TA_LEFT, spaceAfter=6),
     "h3": S("h3", fontName=SANS_B, fontSize=10.5, leading=14, textColor=GREY, alignment=TA_LEFT, spaceBefore=6, spaceAfter=4),
     "cap": S("cap", fontName=SANS_B, fontSize=9, leading=12, textColor=GREY, alignment=TA_LEFT, spaceBefore=4, spaceAfter=3),
@@ -91,7 +93,7 @@ class Doc(BaseDocTemplate):
                          subject="Fictional sample document for demonstration purposes")
         frame = Frame(self.leftMargin, self.bottomMargin, self.width, self.height, id="f")
         self.addPageTemplates([
-            PageTemplate(id="cover", frames=[Frame(0, 0, letter[0], letter[1], id="c")], onPage=self.draw_cover),
+            PageTemplate(id="cover", frames=[Frame(72, 72, letter[0] - 144, letter[1] - 144, id="c")], onPage=self.draw_cover),
             PageTemplate(id="main", frames=[frame], onPageEnd=self.draw_running),
         ])
         self.chap_title = ""
@@ -116,7 +118,7 @@ class Doc(BaseDocTemplate):
         c.drawString(72, 56, "Fictional document created for software demonstration. Any resemblance to real programmes is coincidental.")
 
     def draw_running(self, c, doc):
-        if doc.page <= 1:
+        if c.getPageNumber() <= 1:
             return
         w, h = letter
         c.saveState()
@@ -129,8 +131,12 @@ class Doc(BaseDocTemplate):
         c.drawString(inch, h - 0.68 * inch, "Helios Orbital Systems | Mission Operations Handbook")
         c.drawRightString(w - inch, h - 0.68 * inch, self.chap_title)
         c.drawString(inch, 0.55 * inch, "HOS-MOH-2034 Rev C | Controlled copy")
-        c.drawRightString(w - inch, 0.55 * inch, f"Page {doc.page}")
+        c.drawRightString(w - inch, 0.55 * inch, f"Page {c.getPageNumber()}")
         c.restoreState()
+
+    def beforeDocument(self):
+        self._bm = 0
+        self.chap_title = ""
 
     def afterFlowable(self, fl):
         sty = getattr(fl, "style", None)
@@ -159,8 +165,11 @@ class Gen:
 
     def val(self, par, widen=1.0):
         name, unit, lo, hi, dec = par
-        v = self.rng.uniform(lo, hi)
-        return f"{v:,.{dec}f} {unit}" if dec else f"{round(v):,} {unit}"
+        while True:
+            v = self.rng.uniform(lo, hi)
+            out = f"{v:,.{dec}f} {unit}" if dec else f"{round(v):,} {unit}"
+            if not any(a in out for a in ANSWERS):
+                return out
 
     def doc_ref(self):
         self.docn += 1
@@ -184,7 +193,10 @@ class Gen:
         n_mid = r.randint(3, 6)
         mids = r.sample(T.MID, n_mid)
         parts = [r.choice(T.OPEN)] + mids + ([r.choice(T.CLOSE)] if r.random() < 0.6 else [])
-        text = " ".join(self.fill(t, ch, sec) for t in parts)
+        for _try in range(20):
+            text = " ".join(self.fill(t, ch, sec) for t in parts)
+            if not any(a in text for a in ANSWERS):
+                break
         text = text[0].upper() + text[1:]
         return Paragraph(text, ST["body"])
 
@@ -192,7 +204,7 @@ class Gen:
         r = self.rng
         items = r.sample(T.BULLETS, r.randint(4, 6))
         out = [Paragraph("Practical points", ST["h3"])]
-        out += [Paragraph(self.fill(t, ch, sec), ST["bullet"], bulletText="•") for t in items]
+        out += [Paragraph(self.fill(t, ch, sec), ST["bullet"], bulletText="\u2022") for t in items]
         out.append(Spacer(1, 6))
         return out
 
@@ -223,6 +235,8 @@ class Gen:
                 v = r.uniform(lo, hi)
                 span = (hi - lo) * 0.15
                 f = (lambda x: f"{x:,.{dec}f}") if dec else (lambda x: f"{round(x):,}")
+                while any(a in f"{f(v)} {unit}" for a in ANSWERS):
+                    v = r.uniform(lo, hi)
                 rows.append([C(name.capitalize()), C(f"{f(v)} {unit}"), C(f(v - span)), C(f(v + span)), C(r.choice(T.NOTES))])
             widths = [1.6, 1.4, 0.95, 0.95, 1.6]
         elif kind == "schedule":
@@ -312,7 +326,7 @@ def build_story(scale: float):
     story.append(PageBreak())
 
     # --- Table of contents.
-    story.append(Paragraph("Table of Contents", ST["h1"]))
+    story.append(Paragraph("Table of Contents", ST["h1plain"]))
     toc = TableOfContents()
     toc.levelStyles = [ST["toc1"], ST["toc2"]]
     toc.dotsMinLevel = 0
@@ -418,7 +432,7 @@ def make_questions():
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--scale", type=float, default=1.0)
+    ap.add_argument("--scale", type=float, default=1.6)
     args = ap.parse_args()
     OUT_PDF.parent.mkdir(parents=True, exist_ok=True)
     t0 = time.time()

@@ -17,7 +17,7 @@ FUSED_POOL = 12
 FINAL_K = 7
 RRF_K = 60
 MMR_LAMBDA = 0.7
-CONTEXT_WORD_BUDGET = 6000
+CONTEXT_WORD_BUDGET = 3600
 NEIGHBOUR_OVERLAP_WORDS = 30
 MAX_QUESTION_CHARS = 4000
 HISTORY_TURNS = 6
@@ -151,7 +151,7 @@ def _split_id(cid: str):
     return (base, int(n)) if base and n.isdigit() else (None, None)
 
 
-def expand_neighbours(hits: list[Hit], budget: int = CONTEXT_WORD_BUDGET, top_n: int = 2) -> list[Hit]:
+def expand_neighbours(hits: list[Hit], budget: int = CONTEXT_WORD_BUDGET, top_n: int = 4) -> list[Hit]:
     """Append the following same-page chunk to the top passages (copies, the store is never mutated)."""
     used = sum(len(h.chunk.text.split()) for h in hits)
     present = {h.chunk.id for h in hits}
@@ -193,13 +193,13 @@ def _norm_q(q: str) -> str:
     return " ".join(re.findall(r"\w+", q.lower()))
 
 
-def _cache_key(question: str, scope, ready_ids) -> tuple:
+def _cache_key(question: str, scope, ready_ids, model=None) -> tuple:
     ids = sorted(scope or ready_ids)
     fp = []
     for i in ids:
         d = store.get_doc(i) or {}
         fp.append((i, d.get("chunks", 0), d.get("words", 0)))
-    return (_norm_q(question), tuple(fp))
+    return (_norm_q(question), tuple(fp), model or "")
 
 
 def _cache_get(key):
@@ -234,7 +234,7 @@ def _could_be_not_found(buf: str) -> bool:
 
 # ---------------------------------------------------------------- pipeline
 
-def ask(question: str, doc_ids, history) -> Iterator[dict]:
+def ask(question: str, doc_ids, history, model=None) -> Iterator[dict]:
     t_start = time.perf_counter()
 
     def elapsed() -> int:
@@ -265,7 +265,7 @@ def ask(question: str, doc_ids, history) -> Iterator[dict]:
     hist = _clean_history(history)
 
     # Answer cache, only for stand-alone questions.
-    ckey = _cache_key(question, scope, ready) if not hist else None
+    ckey = _cache_key(question, scope, ready, model) if not hist else None
     if ckey is not None:
         hit = _cache_get(ckey)
         if hit is not None:
@@ -358,7 +358,7 @@ def ask(question: str, doc_ids, history) -> Iterator[dict]:
     ttft = None
     usage = None
     try:
-        for ev in llm.stream_events(messages, max_tokens=900, temperature=0.1):
+        for ev in llm.stream_events(messages, max_tokens=500, temperature=0.1, model=model):
             kind = ev.get("type")
             if kind == "thinking":
                 if not thinking_sent:

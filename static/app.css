@@ -1,16 +1,16 @@
 /* RagBot design system. Light and dark themes via CSS variables. */
 :root {
   color-scheme: light;
-  --bg: #FAF9F6; --card: #FFFFFF; --line: #E8E6E1; --line-soft: #F0EEEA; --line-2: #D6D3CC;
-  --ink: #1A1A1A; --ink-2: #3B3B38; --muted: #6B6B66; --faint: #9A9890;
-  --accent: #0F5C5C; --accent-ink: #0B4747; --accent-rgb: 15,92,92; --on-accent: #FFFFFF;
-  --tint: #E6F0EF; --tint-2: #D3E5E3;
+  --bg: #F6F6F6; --card: #FFFFFF; --line: #E4E4E4; --line-soft: #EEEEEE; --line-2: #D0D0D0;
+  --ink: #111111; --ink-2: #333333; --muted: #6A6A6A; --faint: #9A9A9A;
+  --accent: #111111; --accent-ink: #000000; --accent-rgb: 17,17,17; --on-accent: #FFFFFF;
+  --tint: #EFEFEF; --tint-2: #E0E0E0;
   --amber-bg: #FCF5E4; --amber-line: #EBDAAE; --amber-ink: #7A5A12; --amber: #C98A1B;
   --red-bg: #FBEEEB; --red-line: #EBC8C1; --red-ink: #8E3426; --red: #C0463A; --green: #2F8F6B;
-  --sunk: #F1EFEA; --hover: #F0EEE9; --side: #FCFBF9; --soft: #FDFCFA; --track: #EFEDE8;
-  --bar: rgba(250,249,246,.92); --bg-t: rgba(250,249,246,0); --scroll: #D9D6CF; --hint-bg: rgba(255,255,255,.72);
-  --hl: rgba(255,200,87,.5); --scrim: rgba(26,26,26,.28);
-  --c-mid: #8FB5B2; --c-amber2: #D9B25E; --c-teal2: #3F8483;
+  --sunk: #EFEFEF; --hover: #EEEEEE; --side: #FAFAFA; --soft: #FBFBFB; --track: #E9E9E9;
+  --bar: rgba(246,246,246,.92); --bg-t: rgba(246,246,246,0); --scroll: #D0D0D0; --hint-bg: rgba(255,255,255,.72);
+  --hl: rgba(0,0,0,.13); --scrim: rgba(17,17,17,.28);
+  --c-mid: #A8A8A8; --c-amber2: #D9B25E; --c-teal2: #6A6A6A;
   --shadow-sm: 0 1px 2px rgba(26,26,26,.04);
   --shadow-md: 0 1px 2px rgba(26,26,26,.04), 0 4px 14px rgba(26,26,26,.05);
   --shadow-lg: 0 2px 4px rgba(26,26,26,.04), 0 12px 32px rgba(26,26,26,.09);
@@ -23,16 +23,16 @@
 }
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --bg: #121413; --card: #1A1D1B; --line: #2A2E2B; --line-soft: #222623; --line-2: #3A3F3B;
-  --ink: #ECEBE6; --ink-2: #CFCEC8; --muted: #9A9A93; --faint: #6F7370;
-  --accent: #3FB5AC; --accent-ink: #86DAD2; --accent-rgb: 63,181,172; --on-accent: #08201F;
-  --tint: rgba(63,181,172,.14); --tint-2: rgba(63,181,172,.28);
+  --bg: #0E0E0E; --card: #161616; --line: #262626; --line-soft: #1E1E1E; --line-2: #353535;
+  --ink: #F2F2F2; --ink-2: #D0D0D0; --muted: #9A9A9A; --faint: #6A6A6A;
+  --accent: #F2F2F2; --accent-ink: #FFFFFF; --accent-rgb: 242,242,242; --on-accent: #111111;
+  --tint: rgba(255,255,255,.07); --tint-2: rgba(255,255,255,.14);
   --amber-bg: rgba(201,138,27,.14); --amber-line: rgba(201,138,27,.38); --amber-ink: #E8C072; --amber: #D99A2B;
   --red-bg: rgba(192,70,58,.15); --red-line: rgba(192,70,58,.42); --red-ink: #F0A79D; --red: #D9604F; --green: #4CC594;
-  --sunk: #232725; --hover: #232725; --side: #161918; --soft: #1D201E; --track: #2A2E2B;
-  --bar: rgba(18,20,19,.9); --bg-t: rgba(18,20,19,0); --scroll: #3A3F3B; --hint-bg: rgba(255,255,255,.04);
-  --hl: rgba(255,200,87,.3); --scrim: rgba(0,0,0,.55);
-  --c-mid: #2F7F7A; --c-amber2: #B38A3A; --c-teal2: #3A9C95;
+  --sunk: #1E1E1E; --hover: #1E1E1E; --side: #121212; --soft: #191919; --track: #2A2A2A;
+  --bar: rgba(14,14,14,.9); --bg-t: rgba(14,14,14,0); --scroll: #353535; --hint-bg: rgba(255,255,255,.04);
+  --hl: rgba(255,255,255,.2); --scrim: rgba(0,0,0,.55);
+  --c-mid: #5A5A5A; --c-amber2: #B38A3A; --c-teal2: #8A8A8A;
   --shadow-sm: 0 1px 2px rgba(0,0,0,.3);
   --shadow-md: 0 1px 2px rgba(0,0,0,.3), 0 4px 14px rgba(0,0,0,.25);
   --shadow-lg: 0 2px 4px rgba(0,0,0,.3), 0 12px 32px rgba(0,0,0,.45);
@@ -225,7 +225,7 @@ kbd { font-family: var(--font-mono); font-size: 11px; background: var(--card); b
 
 .welcome { margin: auto; text-align: center; padding: 30px 0 40px; width: 100%; animation: rise .5s var(--ease); }
 .welcome-mark { width: 72px; height: 72px; margin: 0 auto 18px; display: grid; place-items: center; }
-.welcome-mark svg { width: 72px; height: 72px; filter: drop-shadow(0 6px 14px rgba(15,92,92,.25)); }
+.welcome-mark svg { width: 72px; height: 72px; filter: drop-shadow(0 6px 14px rgba(0,0,0,.22)); }
 .welcome-title { font-family: var(--font-serif); font-weight: 500; font-size: 38px; letter-spacing: -.025em; line-height: 1.12; font-variation-settings: "opsz" 120; }
 .welcome-copy { margin: 12px auto 0; color: var(--muted); font-size: 15px; max-width: 460px; }
 .welcome-cards { margin-top: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: left; }
@@ -545,3 +545,25 @@ table.tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
+
+.lg-b { fill: var(--ink); }
+.lg-w { fill: var(--bg); }
+
+/* Architecture diagram (hero) */
+.arch-card { margin-top: 26px; text-align: left; background: var(--card); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow-sm); overflow: hidden; }
+.arch-head, .arch-bar { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; padding: 12px 14px; border-bottom: 1px solid var(--line); }
+.arch-title { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 14px; }
+.arch-title em { font-style: normal; font-weight: 400; color: var(--muted); font-size: 12.5px; margin-left: 4px; }
+.arch-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.arch-chip, .arch-btn { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; padding: 6px 10px; border: 1px solid var(--line-2); border-radius: 9px; background: var(--card); color: var(--ink); text-decoration: none; transition: background .15s, border-color .15s, transform .15s var(--ease); }
+.arch-chip:hover, .arch-btn:hover { background: var(--hover); border-color: var(--muted); }
+.arch-btn:active { transform: scale(.97); }
+.arch-btn.is-solid { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+.arch-chip svg, .arch-btn svg { width: 14px; height: 14px; }
+.arch-stage { position: relative; height: 380px; overflow: hidden; background: var(--soft); cursor: zoom-in; }
+.arch-stage.is-grab { cursor: grabbing; }
+.arch-inner { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+.arch-loading { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); font-size: 13px; text-align: center; padding: 16px; }
+.arch-overlay { position: fixed; inset: 0; z-index: 90; background: var(--bg); display: flex; flex-direction: column; animation: rise .25s var(--ease); }
+.arch-stage-full { flex: 1; height: auto; cursor: grab; background: var(--bg); }
+.arch-stage svg text, .arch-stage svg span, .arch-stage svg p { font-family: var(--font-ui); }

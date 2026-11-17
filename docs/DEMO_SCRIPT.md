@@ -35,7 +35,7 @@ Open the Analytics tab. "Questions asked, answer rate, not found rate, average t
 
 ## 9:00 to 10:00 - How it works and close
 Show the architecture diagram (docs/ARCHITECTURE.md).
-"Hybrid retrieval: BM25 inverted index, query expansion, reciprocal rank fusion, then MMR so the passages are diverse, and neighbour expansion so answers that cross a chunk boundary still work. The model only ever sees about 7 passages, so cost and speed do not grow with document size. A strict prompt forces citations and NOT_FOUND when the context is silent."
+"Advanced, modular RAG: sparse BM25 retrieval over an inverted index, query expansion, reciprocal rank fusion, then MMR so the passages are diverse, and neighbour expansion so answers that cross a chunk boundary still work. The model only ever sees about 7 passages, so cost and speed do not grow with document size. A strict prompt forces citations and NOT_FOUND when the context is silent."
 
 Close: "RagBot. Answers, with receipts."
 
