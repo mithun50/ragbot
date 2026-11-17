@@ -386,7 +386,7 @@ def ask(question: str, doc_ids, history, model=None) -> Iterator[dict]:
     ttft = None
     usage = None
     try:
-        for ev in llm.stream_events(messages, max_tokens=500, temperature=0.1, model=model):
+        for ev in llm.stream_events(messages, max_tokens=1500, temperature=0.1, model=model):
             kind = ev.get("type")
             if kind == "thinking":
                 if not thinking_sent:

@@ -152,6 +152,8 @@ def _payload(model: str, messages: list[dict], max_tokens: int, temperature: flo
         "temperature": temperature,
         "stream": stream,
     }
+    # Free models reason before answering; keep that short so answers start quickly.
+    body["reasoning"] = {"effort": "low"}
     if stream:
         body["stream_options"] = {"include_usage": True}
     return body
