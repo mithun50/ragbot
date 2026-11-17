@@ -270,11 +270,27 @@ def ask(question: str, doc_ids, history, model=None) -> Iterator[dict]:
         return
     question = question[:MAX_QUESTION_CHARS]
 
+    def states() -> dict:
+        return {d["id"]: d.get("status") for d in store.list_docs()}
+
+    selected = [d for d in (doc_ids or []) if isinstance(d, str)]
+    # A question sent right after an upload waits for the document instead of failing.
+    def pending(s: dict) -> set:
+        return {i for i, v in s.items() if v not in ("ready", "error") and (not selected or i in selected)}
+
+    def has_ready(s: dict) -> bool:
+        return any(v == "ready" and (not selected or i in selected) for i, v in s.items())
+
+    st = states()
+    if pending(st) and not has_ready(st):
+        yield status("preparing", "Preparing your document")
+        deadline = time.perf_counter() + 180
+        while pending(states()) and time.perf_counter() < deadline:
+            time.sleep(0.4)
     ready = {d["id"] for d in store.list_docs() if d.get("status") == "ready"}
     if not ready:
         yield _ev("error", message="Upload a document first")
         return
-    selected = [d for d in (doc_ids or []) if isinstance(d, str)]
     if selected:
         scope = [d for d in selected if d in ready]
         if not scope:

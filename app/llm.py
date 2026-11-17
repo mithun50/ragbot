@@ -11,8 +11,8 @@ import httpx
 from dotenv import load_dotenv
 
 API_URL = "https://openrouter.ai/api/v1/chat/completions"
-DEFAULT_MODEL = "inclusionai/ling-3.2-flash:free"
-DEFAULT_FALLBACKS = "particle-ai/particle-1:free"
+DEFAULT_MODEL = "z-ai/glm-5.3-flash"
+DEFAULT_FALLBACKS = "particle-ai/particle-1:free,inclusionai/ling-3.2-flash:free"
 TIMEOUT = httpx.Timeout(60.0, connect=15.0)
 MAX_ATTEMPTS = 3
 
