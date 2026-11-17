@@ -14,7 +14,7 @@ Demo link: http://localhost:8001 . Demo file: `samples/helios_handbook.pdf` (269
 2. **Ask.** Type: "What is the minimum voltage the battery bus can be discharged to on Helios-C?" Point at the live steps: searching, ranking, reading, writing. "Nothing is hidden."
 3. **Receipts.** Answer: 31.5 volts. Click the citation chip: the source panel opens on page 62 with the matching words highlighted. "The document also has a decoy, 26.8 volts for another spacecraft on page 181. It picks the right one."
 4. **Follow up** in the same chat: "And what about Helios-A?" "One chat, any number of documents, no re-uploading."
-5. **Refusal.** Ask: "What is the CEO's salary?" The amber card appears instantly. "It does not guess, and it does not even call the model."
+5. **Refusal.** Ask: "What is the CEO's salary?" It says plainly that the document does not state it, and shows what it does cover. "It does not guess, and it does not even call the model."
 6. **Voice.** Click the mic and ask a question out loud (Chrome or Edge).
 7. **Analytics tab.** Questions, answer rate, time to first token, tokens in and out, cache hit rate.
 

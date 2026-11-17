@@ -10,7 +10,7 @@ flowchart LR
     API --> QA[QA engine]
     ING --> STORE[(Index store: chunks and inverted index)]
     QA --> STORE
-    QA --> LLM[OpenRouter: Ling 3.2 Flash, fallback Particle 1]
+    QA --> LLM[OpenRouter: GLM 5.3 Flash, fallbacks Particle 1 and Ling]
     QA --> AN[(Analytics log)]
     API --> AN
 ```
@@ -37,7 +37,7 @@ flowchart TD
     QE --> S[BM25 search per query, k=16]
     S --> RRF[Reciprocal rank fusion]
     RRF --> GATE{Top relevance above 0.12?}
-    GATE -->|no| NF[NOT_FOUND with closest passages, model not called]
+    GATE -->|no| NF[Add document-wide passages instead of refusing]
     GATE -->|yes| MMR[MMR diversification: pick 7 distinct passages]
     MMR --> NB[Neighbour expansion on top 2 passages]
     NB --> P[Build numbered context under a word budget]
@@ -63,7 +63,7 @@ sequenceDiagram
 - Memory: pages are streamed, never held as a list. A 500 page PDF peaked at about 26 MB of Python memory.
 - Speed: inverted index with packed postings. Search over 50,000 chunks takes 5 to 60 ms.
 - Cost: the model always sees about 7 passages, so the prompt size is constant for a 5 page or a 5000 page document.
-- Trust: citations are validated, and weak retrieval short circuits to NOT_FOUND without calling the model.
+- Trust: citations are validated, and weak retrieval widens the context, and when the document truly lacks a detail the answer says so plainly.
 
 ## Metrics tracked per question
 Time to first token, total time, retrieval time, model time, prompt tokens, completion tokens, cached tokens, tokens per second, cache hit, model, passages, answered or not found or error.

@@ -52,7 +52,7 @@ flowchart LR
     API --> QA["QA engine"]
     ING --> STORE[("Index store: chunks and inverted index")]
     QA --> STORE
-    QA --> LLM["OpenRouter: Ling 3.2 Flash, Particle 1"]
+    QA --> LLM["OpenRouter: GLM 5.3 Flash, fallbacks Particle 1 and Ling"]
     QA --> AN[("Analytics log")]
     </pre></div>
   </section>
@@ -75,7 +75,7 @@ flowchart TD
 
   <section>
     <h2>Question answering</h2>
-    <p>Multi-query keyword retrieval with fusion and re-ranking, a relevance gate that refuses to guess, and validated citations.</p>
+    <p>Multi-query keyword retrieval with fusion and re-ranking, a broader second pass that admits what the document does not say, and validated citations.</p>
     <div class="diagram"><pre class="mermaid">
 flowchart TD
     Q["Question"] --> CA{"Answer cache hit?"}
@@ -84,7 +84,7 @@ flowchart TD
     QE --> S["BM25 search per query, k = 16"]
     S --> RRF["Reciprocal rank fusion"]
     RRF --> GATE{"Top relevance above 0.12?"}
-    GATE -->|no| NF["NOT_FOUND with closest passages, model not called"]
+    GATE -->|no| NF["Add document-wide passages instead of refusing"]
     GATE -->|yes| MMR["MMR: pick 7 distinct passages"]
     MMR --> NB["Neighbour expansion on top 2 passages"]
     NB --> P["Numbered context under a word budget"]
