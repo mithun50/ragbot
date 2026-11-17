@@ -234,18 +234,8 @@ def _could_be_not_found(buf: str) -> bool:
 
 # ---------------------------------------------------------------- pipeline
 
-_OVERVIEW_RE = re.compile(
-    r"summar|overview|tl;?dr|\bgist\b|outline|key (?:points?|takeaways?|ideas?)|main (?:points?|ideas?|topics?)"
-    r"|what(?:'s| is| are)?\s+(?:this|the)\s+(?:doc|document|pdf|file|handbook|paper|report)"
-    r"|(?:tell|explain|describe).{0,30}(?:this|the)\s+(?:doc|document|pdf|file|handbook)"
-    r"|(?:doc|document|pdf|file|handbook)\s+(?:is\s+)?about",
-    re.I,
-)
 OVERVIEW_PASSAGES = 8
-
-
-def _is_overview(question: str) -> bool:
-    return bool(_OVERVIEW_RE.search(question or ""))
+WEAK_NORM = 0.35
 
 
 def _sample_hits(doc_ids) -> list[Hit]:
@@ -332,10 +322,13 @@ def ask(question: str, doc_ids, history, model=None) -> Iterator[dict]:
     top = float(primary[0].norm) if primary else 0.0
     selected_hits = mmr_select(fused[:FUSED_POOL]) if primary else []
     selected_hits = expand_neighbours(selected_hits) if selected_hits else []
-    if _is_overview(question) or not primary or top < MIN_NORM:
+    if not primary or top < WEAK_NORM:
+        # Weak or no keyword match (broad or conversational question): add document-wide context rather than refusing.
         sampled = _sample_hits(scope or ready)
         if sampled:
-            selected_hits, primary, top = sampled, sampled, max(top, 0.5)
+            seen = {h.chunk.id for h in selected_hits}
+            selected_hits = (selected_hits + [h for h in sampled if h.chunk.id not in seen])[:OVERVIEW_PASSAGES]
+            primary, top = primary or sampled, max(top, 0.5)
     retrieval_ms = int((time.perf_counter() - t0) * 1000)
 
     def metrics(**kw) -> dict:
