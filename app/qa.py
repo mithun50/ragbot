@@ -332,7 +332,7 @@ def ask(question: str, doc_ids, history, model=None) -> Iterator[dict]:
     top = float(primary[0].norm) if primary else 0.0
     selected_hits = mmr_select(fused[:FUSED_POOL]) if primary else []
     selected_hits = expand_neighbours(selected_hits) if selected_hits else []
-    if _is_overview(question):
+    if _is_overview(question) or not primary or top < MIN_NORM:
         sampled = _sample_hits(scope or ready)
         if sampled:
             selected_hits, primary, top = sampled, sampled, max(top, 0.5)
