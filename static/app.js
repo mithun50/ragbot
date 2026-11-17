@@ -715,10 +715,9 @@
     w.innerHTML = '<div class="welcome-mark">' + LOGO + '</div><h1 class="welcome-title">Ask RagBot about your documents</h1><p class="welcome-copy">' + esc(copy) + '</p>' +
       '<div class="welcome-cards">' + cards.map(function (c) {
         return '<button type="button" class="wcard" data-q="' + esc(c[1]) + '">' + icon(c[0]) + '<span>' + esc(c[1]) + '</span></button>';
-      }).join('') + '</div><div class="arch-card" id="arch-card"></div>';
+      }).join('') + '</div>';
     $$('.wcard', w).forEach(function (b) { b.addEventListener('click', function () { askQuestion(b.dataset.q); }); });
     icons();
-    if (window.RagArch) window.RagArch.mount($('#arch-card'));
   }
 
   /* ---------- turns ---------- */

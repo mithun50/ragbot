@@ -548,22 +548,3 @@ table.tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
 
 .lg-b { fill: var(--ink); }
 .lg-w { fill: var(--bg); }
-
-/* Architecture diagram (hero) */
-.arch-card { margin-top: 26px; text-align: left; background: var(--card); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow-sm); overflow: hidden; }
-.arch-head, .arch-bar { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; padding: 12px 14px; border-bottom: 1px solid var(--line); }
-.arch-title { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 14px; }
-.arch-title em { font-style: normal; font-weight: 400; color: var(--muted); font-size: 12.5px; margin-left: 4px; }
-.arch-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.arch-chip, .arch-btn { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; padding: 6px 10px; border: 1px solid var(--line-2); border-radius: 9px; background: var(--card); color: var(--ink); text-decoration: none; transition: background .15s, border-color .15s, transform .15s var(--ease); }
-.arch-chip:hover, .arch-btn:hover { background: var(--hover); border-color: var(--muted); }
-.arch-btn:active { transform: scale(.97); }
-.arch-btn.is-solid { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
-.arch-chip svg, .arch-btn svg { width: 14px; height: 14px; }
-.arch-stage { position: relative; height: 380px; overflow: hidden; background: var(--soft); cursor: zoom-in; }
-.arch-stage.is-grab { cursor: grabbing; }
-.arch-inner { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
-.arch-loading { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); font-size: 13px; text-align: center; padding: 16px; }
-.arch-overlay { position: fixed; inset: 0; z-index: 90; background: var(--bg); display: flex; flex-direction: column; animation: rise .25s var(--ease); }
-.arch-stage-full { flex: 1; height: auto; cursor: grab; background: var(--bg); }
-.arch-stage svg text, .arch-stage svg span, .arch-stage svg p { font-family: var(--font-ui); }
