@@ -74,12 +74,20 @@ def _stem(w: str) -> str:
     return s
 
 
+_COMPOUND_RE = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)+")
+
+
 def tokenize(text: str) -> list[str]:
+    low = text.lower()
     out = []
-    for w in _WORD_RE.findall(text.lower()):
+    for w in _WORD_RE.findall(low):
         if w in STOPWORDS or len(w) > 40:
             continue
         out.append(_stem(w))
+    # Keep hyphenated names whole (helios-a, tn-0040) so one-letter suffixes still tell entities apart.
+    for c in _COMPOUND_RE.findall(low):
+        if len(c) <= 40:
+            out.append(c)
     return out
 
 

@@ -87,6 +87,20 @@ def _rewrite(question: str, history: list[dict]) -> str:
 
 # ---------------------------------------------------------------- query expansion
 
+_ENTITY_RE = re.compile(r"\b[A-Z][A-Za-z0-9]*-[A-Za-z0-9]+\b")
+
+
+def entity_queries(question: str) -> list[str]:
+    """One query per named entity (Helios-C, Helios-A) when a question compares several of them."""
+    entities = list(dict.fromkeys(_ENTITY_RE.findall(question)))
+    if len(entities) < 2:
+        return []
+    words = re.findall(r"[A-Za-z0-9][A-Za-z0-9'\-]*", question)
+    keys = [w for w in words if w.lower().strip("'") not in _QUESTION_WORDS]
+    shared = [w for w in keys if w not in entities and not any(w in e for e in entities)]
+    return [" ".join(shared + [e, e]) for e in entities[:3]]
+
+
 def expand_queries(question: str) -> list[str]:
     """Return up to 2 extra cheap local queries: key terms, and a rare-term focused variant."""
     quoted = [a or b for a, b in _QUOTED_RE.findall(question)]
@@ -105,6 +119,14 @@ def expand_queries(question: str) -> list[str]:
         q = q.strip()
         if q and q != question and q not in uniq:
             uniq.append(q)
+    # Comparison questions name several entities (Helios-C versus Helios-A): search each one on its own
+    # so one entity's passages cannot crowd the other out.
+    entities = list(dict.fromkeys(_ENTITY_RE.findall(question)))
+    if len(entities) >= 2:
+        shared = [w for w in keys if w not in entities and not any(w in e for e in entities)]
+        for e in entities[:3]:
+            uniq.append(" ".join(shared + [e, e]))
+        return uniq[:5]
     return uniq[:2]
 
 
@@ -333,7 +355,10 @@ def ask(question: str, doc_ids, history, model=None) -> Iterator[dict]:
     try:
         primary = store.search(query, scope, k=SEARCH_K)
         rankings = [primary]
-        for q in expand_queries(query):
+        extra_qs = expand_queries(query)
+        if query != question:  # rewritten follow-up: also expand the user's own wording, it keeps the named entities
+            extra_qs += [q for q in [question] + expand_queries(question) if q not in extra_qs and q != query]
+        for q in extra_qs:
             rankings.append(store.search(q, scope, k=SEARCH_K))
     except Exception:
         yield _ev("error", message="Search failed unexpectedly. Please try again.")
@@ -342,6 +367,20 @@ def ask(question: str, doc_ids, history, model=None) -> Iterator[dict]:
     yield status("ranking", "Ranking passages", candidates=len(fused))
     top = float(primary[0].norm) if primary else 0.0
     selected_hits = mmr_select(fused[:FUSED_POOL]) if primary else []
+    # Comparison questions: guarantee the best passage for every named entity is in the context.
+    try:
+        have = {h.chunk.id for h in selected_hits}
+        forced = []
+        for eq in (entity_queries(question) or entity_queries(query)):
+            best = store.search(eq, scope, k=2)
+            for h in best[:1]:
+                if h.chunk.id not in have:
+                    forced.append(h)
+                    have.add(h.chunk.id)
+        # Near the front so the context budget cannot cut them off.
+        selected_hits = selected_hits[:2] + forced + selected_hits[2:]
+    except Exception:
+        pass
     selected_hits = expand_neighbours(selected_hits) if selected_hits else []
     if not primary or top < WEAK_NORM:
         # Weak or no keyword match (broad or conversational question): add document-wide context rather than refusing.
@@ -476,7 +515,12 @@ def ask(question: str, doc_ids, history, model=None) -> Iterator[dict]:
             yield _ev("token", text=text2)
             cites2 = _citations(text2, len(used2))
             total2 = elapsed()
-            m2 = dict(m, total_ms=total2, llm_ms=llm_ms + (total2 - total), passages=len(used2))
+            pass2_s = max(0.001, (total2 - total) / 1000)
+            ct2 = int(len(text2.split()) * 1.3)
+            pt2 = int(sum(len(str(x.get("content", "")).split()) for x in msgs2) * 1.3)
+            m2 = dict(m, total_ms=total2, llm_ms=llm_ms + (total2 - total), passages=len(used2),
+                      prompt_tokens=pt + pt2, completion_tokens=ct + ct2, tokens_per_sec=round(ct2 / pass2_s, 1),
+                      estimated_tokens=True)
             log(True, m2["llm_ms"], used2, len(cites2), m2)
             yield _ev("done", answer=text2, found=True, citations=cites2,
                       latency_ms={"retrieval": retrieval_ms, "llm": m2["llm_ms"]}, top_score=round(top, 4), metrics=m2)

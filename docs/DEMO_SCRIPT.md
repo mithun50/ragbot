@@ -25,7 +25,7 @@ Before you go on stage: server running at http://localhost:8000, `samples/helios
 Click the mic and ask a question out loud: "Which ground station handles contacts in the early morning?" Text appears live and sends itself. "Hands free, same receipts."
 
 ## 6:00 to 7:00 - It refuses to guess
-Ask: "What is the CEO's salary?" The amber card appears: "Not found in your documents", with the closest passages as hints. "This is the part that matters. When the answer is not in the document, it says so. No hallucination, and it does not even call the model, so it is instant and free."
+Ask: "What is the CEO's salary?" It answers that the passages do not state it, and lists what the document does cover, with citations. "This is the part that matters. When the answer is not in the document, it says so. No hallucination, and it does not even call the model, so it is instant and free."
 
 ## 7:00 to 8:00 - Multi document
 Drag in `policy_short.docx`. Ask a question that only the policy answers. "Each citation names its file. You can include or exclude documents from the search with one click."
