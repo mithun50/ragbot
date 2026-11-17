@@ -12,12 +12,12 @@ from app import analytics, llm, prompts
 from app.index import Hit, store, tokenize
 
 MIN_NORM = 0.12
-SEARCH_K = 16
-FUSED_POOL = 12
-FINAL_K = 7
+SEARCH_K = 24
+FUSED_POOL = 20
+FINAL_K = 10
 RRF_K = 60
-MMR_LAMBDA = 0.7
-CONTEXT_WORD_BUDGET = 3600
+MMR_LAMBDA = 0.9
+CONTEXT_WORD_BUDGET = 5200
 NEIGHBOUR_OVERLAP_WORDS = 30
 MAX_QUESTION_CHARS = 4000
 HISTORY_TURNS = 6
@@ -234,7 +234,7 @@ def _could_be_not_found(buf: str) -> bool:
 
 # ---------------------------------------------------------------- pipeline
 
-OVERVIEW_PASSAGES = 8
+OVERVIEW_PASSAGES = 10
 WEAK_NORM = 0.35
 
 
